@@ -6,11 +6,9 @@ output "api_key_id" {
 output "public_key" {
   description = "Public key gerada pela API key"
   value       = mongodbatlas_api_key.this.public_key
-  sensitive   = true
 }
 
 output "private_key" {
   description = "Private key gerada pela API key"
   value       = mongodbatlas_api_key.this.private_key
-  sensitive   = true
 }
