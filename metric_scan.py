@@ -10,7 +10,9 @@ from __future__ import annotations
 
 import csv
 import datetime as dt
+import os
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
 import boto3
@@ -18,12 +20,14 @@ import boto3
 
 @dataclass
 class ResourceActivity:
+    profile: str
     resource_type: str
     identifier: str
     last_activity: Optional[dt.datetime]
 
     def to_row(self, months: int) -> Dict[str, str]:
         return {
+            "profile": self.profile,
             "resource_type": self.resource_type,
             "identifier": self.identifier,
             "last_activity_utc": self.last_activity.isoformat() if self.last_activity else "nunca",
@@ -45,6 +49,31 @@ def build_time_range(months: int) -> Tuple[dt.datetime, dt.datetime, dt.datetime
     start = now - dt.timedelta(days=30 * months)
     three_months_ago = now - dt.timedelta(days=90)
     return start, now, three_months_ago
+
+
+def load_profiles(config_path: Path) -> List[str]:
+    """Carrega os profiles a partir de um arquivo de configuração AWS."""
+    import configparser
+
+    if not config_path.exists():
+        print(f"Arquivo de configuração {config_path} não encontrado. Usando profile padrão.")
+        return ["default"]
+
+    config = configparser.ConfigParser()
+    config.read(config_path)
+
+    profiles: List[str] = []
+    for section in config.sections():
+        if section == "default":
+            profiles.append("default")
+        elif section.startswith("profile "):
+            profiles.append(section.split(" ", 1)[1])
+        else:
+            profiles.append(section)
+
+    if not profiles:
+        profiles.append("default")
+    return profiles
 
 
 def metric_last_activity(
@@ -94,7 +123,12 @@ def metric_last_activity(
     return None
 
 
-def combined_last_activity(cw, queries: Iterable[Tuple[str, str, Sequence[Dict[str, str]], str]], start: dt.datetime, end: dt.datetime) -> Optional[dt.datetime]:
+def combined_last_activity(
+    cw,
+    queries: Iterable[Tuple[str, str, Sequence[Dict[str, str]], str]],
+    start: dt.datetime,
+    end: dt.datetime,
+) -> Optional[dt.datetime]:
     latest: Optional[dt.datetime] = None
     for namespace, metric, dimensions, stat in queries:
         ts = metric_last_activity(
@@ -111,7 +145,13 @@ def combined_last_activity(cw, queries: Iterable[Tuple[str, str, Sequence[Dict[s
     return latest
 
 
-def scan_elasticache(cw, client, start: dt.datetime, end: dt.datetime) -> List[ResourceActivity]:
+def scan_elasticache(
+    profile: str,
+    cw,
+    client,
+    start: dt.datetime,
+    end: dt.datetime,
+) -> List[ResourceActivity]:
     activities: List[ResourceActivity] = []
     paginator = client.get_paginator("describe_replication_groups")
     for page in paginator.paginate():
@@ -136,11 +176,17 @@ def scan_elasticache(cw, client, start: dt.datetime, end: dt.datetime) -> List[R
                 start,
                 end,
             )
-            activities.append(ResourceActivity("elasticache-replication-group", group_id, last))
+            activities.append(ResourceActivity(profile, "elasticache-replication-group", group_id, last))
     return activities
 
 
-def scan_dynamodb(cw, client, start: dt.datetime, end: dt.datetime) -> List[ResourceActivity]:
+def scan_dynamodb(
+    profile: str,
+    cw,
+    client,
+    start: dt.datetime,
+    end: dt.datetime,
+) -> List[ResourceActivity]:
     activities: List[ResourceActivity] = []
     paginator = client.get_paginator("list_tables")
     for page in paginator.paginate():
@@ -155,11 +201,17 @@ def scan_dynamodb(cw, client, start: dt.datetime, end: dt.datetime) -> List[Reso
                 start,
                 end,
             )
-            activities.append(ResourceActivity("dynamodb", table_name, last))
+            activities.append(ResourceActivity(profile, "dynamodb", table_name, last))
     return activities
 
 
-def scan_documentdb(cw, client, start: dt.datetime, end: dt.datetime) -> List[ResourceActivity]:
+def scan_documentdb(
+    profile: str,
+    cw,
+    client,
+    start: dt.datetime,
+    end: dt.datetime,
+) -> List[ResourceActivity]:
     activities: List[ResourceActivity] = []
     paginator = client.get_paginator("describe_db_clusters")
     for page in paginator.paginate():
@@ -172,12 +224,12 @@ def scan_documentdb(cw, client, start: dt.datetime, end: dt.datetime) -> List[Re
                 start,
                 end,
             )
-            activities.append(ResourceActivity("documentdb", identifier, last))
+            activities.append(ResourceActivity(profile, "documentdb", identifier, last))
     return activities
 
 
 def generate_csv(rows: List[ResourceActivity], months: int, output_path: str = "inactive_resources.csv") -> None:
-    fieldnames = ["resource_type", "identifier", "last_activity_utc", "checked_months"]
+    fieldnames = ["profile", "resource_type", "identifier", "last_activity_utc", "checked_months"]
     with open(output_path, "w", newline="", encoding="utf-8") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
@@ -189,25 +241,48 @@ def main() -> None:
     months = prompt_months()
     start, end, three_months_ago = build_time_range(months)
 
-    cloudwatch = boto3.client("cloudwatch")
-    elasticache = boto3.client("elasticache")
-    dynamodb = boto3.client("dynamodb")
-    docdb = boto3.client("docdb")
+    config_path = Path("./AWS/config")
+    os.environ["AWS_CONFIG_FILE"] = str(config_path)
+    profiles = load_profiles(config_path)
 
     candidates: List[ResourceActivity] = []
-    for activity in (
-        scan_elasticache(cloudwatch, elasticache, start, end)
-        + scan_dynamodb(cloudwatch, dynamodb, start, end)
-        + scan_documentdb(cloudwatch, docdb, start, end)
-    ):
-        if activity.last_activity is None or activity.last_activity < three_months_ago:
-            candidates.append(activity)
+    failures: List[str] = []
+
+    for profile in profiles:
+        print(f"Processando profile: {profile}")
+        try:
+            session = boto3.Session(profile_name=profile)
+            cloudwatch = session.client("cloudwatch")
+            elasticache = session.client("elasticache")
+            dynamodb = session.client("dynamodb")
+            docdb = session.client("docdb")
+
+            for activity in (
+                scan_elasticache(profile, cloudwatch, elasticache, start, end)
+                + scan_dynamodb(profile, cloudwatch, dynamodb, start, end)
+                + scan_documentdb(profile, cloudwatch, docdb, start, end)
+            ):
+                if activity.last_activity is None or activity.last_activity < three_months_ago:
+                    candidates.append(activity)
+        except Exception as exc:  # boto3/botocore failures
+            failures.append(f"{profile}: {exc}")
+            continue
 
     generate_csv(candidates, months)
 
     for item in candidates:
         last = item.last_activity.isoformat() if item.last_activity else "nunca"
-        print(f"{item.resource_type}: {item.identifier} | última atividade: {last}")
+        print(
+            f"{item.profile} | {item.resource_type}: {item.identifier} | última atividade: {last}"
+        )
+
+    print(f"Recursos adicionados ao CSV: {len(candidates)}")
+    if failures:
+        print("Perfis com falha:")
+        for failure in failures:
+            print(f" - {failure}")
+    else:
+        print("Nenhum profile falhou durante a execução.")
 
 
 if __name__ == "__main__":
