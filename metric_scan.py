@@ -11,6 +11,7 @@ from __future__ import annotations
 import csv
 import datetime as dt
 import os
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
@@ -38,7 +39,10 @@ class ResourceActivity:
 def prompt_months(default: int = 6) -> int:
     raw = input(f"Quantos meses deseja analisar? [{default}]: ").strip()
     try:
-        return int(raw) if raw else default
+        value = int(raw) if raw else default
+        if value <= 0:
+            raise ValueError
+        return value
     except ValueError:
         print("Valor inválido, usando padrão de 6 meses.")
         return default
@@ -74,6 +78,18 @@ def load_profiles(config_path: Path) -> List[str]:
     if not profiles:
         profiles.append("default")
     return profiles
+
+
+def resolve_shared_credentials(credentials_path: Path) -> None:
+    """Aponta boto3 para um arquivo de credenciais se ele existir."""
+    if credentials_path.exists():
+        os.environ["AWS_SHARED_CREDENTIALS_FILE"] = str(credentials_path)
+    else:
+        # Permite observabilidade explícita caso o arquivo esperado não exista.
+        print(
+            f"Arquivo de credenciais {credentials_path} não encontrado. "
+            "Usando credenciais padrão configuradas no ambiente."
+        )
 
 
 def metric_last_activity(
@@ -242,11 +258,14 @@ def main() -> None:
     start, end, three_months_ago = build_time_range(months)
 
     config_path = Path("./AWS/config")
+    credentials_path = Path("./AWS/credentials")
     os.environ["AWS_CONFIG_FILE"] = str(config_path)
+    resolve_shared_credentials(credentials_path)
     profiles = load_profiles(config_path)
 
     candidates: List[ResourceActivity] = []
     failures: List[str] = []
+    scanned_count = 0
 
     for profile in profiles:
         print(f"Processando profile: {profile}")
@@ -262,6 +281,7 @@ def main() -> None:
                 + scan_dynamodb(profile, cloudwatch, dynamodb, start, end)
                 + scan_documentdb(profile, cloudwatch, docdb, start, end)
             ):
+                scanned_count += 1
                 if activity.last_activity is None or activity.last_activity < three_months_ago:
                     candidates.append(activity)
         except Exception as exc:  # boto3/botocore failures
@@ -270,19 +290,25 @@ def main() -> None:
 
     generate_csv(candidates, months)
 
-    for item in candidates:
-        last = item.last_activity.isoformat() if item.last_activity else "nunca"
-        print(
-            f"{item.profile} | {item.resource_type}: {item.identifier} | última atividade: {last}"
-        )
+    if candidates:
+        print("Recursos inativos identificados:")
+        for item in candidates:
+            last = item.last_activity.isoformat() if item.last_activity else "nunca"
+            print(
+                f"{item.profile} | {item.resource_type}: {item.identifier} | última atividade: {last}"
+            )
+    else:
+        print("Nenhum recurso inativo encontrado para os perfis processados.")
 
-    print(f"Recursos adicionados ao CSV: {len(candidates)}")
+    print(f"Recursos adicionados ao CSV: {len(candidates)} (de {scanned_count} analisados)")
     if failures:
         print("Perfis com falha:")
         for failure in failures:
             print(f" - {failure}")
     else:
         print("Nenhum profile falhou durante a execução.")
+
+    sys.stdout.flush()
 
 
 if __name__ == "__main__":
