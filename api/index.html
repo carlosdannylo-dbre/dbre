@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crochê Delas — Bolsas de Crochê Feitas à Mão</title>
+  <meta name="description" content="Bolsas de crochê feitas à mão, com design moderno e acabamento impecável. Envio para todo o Brasil e atendimento pelo WhatsApp." />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Crochê Delas" />
+  <meta property="og:description" content="Bolsas de crochê feitas à mão. Moderno, clean e com WhatsApp." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/images/capa-croche-delas.jpg" />
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --brand:#111827;
+      --accent:#eab308;
+      --card:#f9fafb;
+      --border:#e5e7eb;
+      --radius:14px;
+      --shadow:0 6px 24px rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--bg);color:var(--text);font-family:Poppins, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    .container{max-width:1080px;margin:0 auto;padding:0 20px}
+
+    /* Header */
+    header{position:sticky;top:0;background:rgba(255,255,255,.75);backdrop-filter:saturate(180%) blur(10px);border-bottom:1px solid var(--border);z-index:50}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.3px}
+    .brand-mark{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--brand),#4b5563)}
+    .nav a.btn{padding:.7rem 1rem;border:1px solid var(--text);border-radius:999px;font-weight:500;transition:transform .2s, background .2s}
+    .nav a.btn:hover{transform:translateY(-1px);background:var(--text);color:#fff}
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:center;padding:64px 0}
+    .hero h1{font-size:clamp(28px,4vw,44px);line-height:1.1;margin:0 0 14px}
+    .hero p{color:var(--muted);margin:0 0 22px;font-size:clamp(14px,2vw,18px)}
+    .hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+    .btn-primary{background:var(--text);color:#fff;border:none;border-radius:999px;padding:.9rem 1.2rem;font-weight:600;box-shadow:var(--shadow)}
+    .btn-secondary{background:var(--card);border:1px solid var(--border);border-radius:999px;padding:.9rem 1.2rem;font-weight:600}
+
+    .hero .photo{
+      border-radius:20px;overflow:hidden;background:var(--card);border:1px solid var(--border);
+      aspect-ratio:9/16; /* moldura alinhada ao padrão de tela de celular/iPhone */
+      display:flex;align-items:center;justify-content:center;
+      max-height:780px;
+    }
+    .hero .photo img{width:100%;height:100%;object-fit:cover}
+
+    /* Section titles */
+    .section{padding:28px 0 54px}
+    .section h2{font-size:clamp(22px,3.2vw,32px);margin:8px 0 6px}
+    .section p.lead{color:var(--muted);margin:0 0 20px}
+
+    /* Toolbar */
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 18px}
+    .search{flex:1;min-width:220px;border:1px solid var(--border);border-radius:999px;padding:.75rem 1rem;background:#fff}
+    .filter{border:1px solid var(--border);background:#fff;border-radius:999px;padding:.7rem 1rem}
+
+    /* Grid products */
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    @media (max-width:900px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:560px){.grid{grid-template-columns:1fr}}
+
+    @media (max-width:560px){
+      .container{padding:0 14px}
+      header .nav{height:58px}
+      .hero{padding:28px 0}
+      .hero .cta a{flex:1;text-align:center}
+      .btn-primary,.btn-secondary{width:100%}
+      .card .body{padding:12px}
+      .card h3{font-size:16px}
+      .section{padding:22px 0 40px}
+    }
+
+    .card{
+      background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+      overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column
+    }
+    .card .img{aspect-ratio:4/5; /* proporção comum para posts do Instagram */
+      background:#eee}
+    .card .img img{width:100%;height:100%;object-fit:cover}
+    .card .body{padding:14px}
+    .card h3{font-size:18px;margin:0 0 4px}
+    .price{font-weight:700;margin:6px 0}
+    .meta{color:var(--muted);font-size:14px}
+    .card .actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+    .chip{font-size:12px;border:1px solid var(--border);border-radius:999px;padding:.2rem .6rem;background:#fff}
+
+    /* Badge */
+    .badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;border:1px solid var(--border);border-radius:999px;padding:.35rem .7rem;background:#fff}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block}
+
+    /* About */
+    .about{
+      display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:center;
+      background:linear-gradient(180deg,#fff,#fafafa);border:1px solid var(--border);
+      border-radius:20px;padding:22px
+    }
+    @media (max-width:900px){.about{grid-template-columns:1fr}}
+
+    /* Footer */
+    footer{border-top:1px solid var(--border);padding:24px 0;color:var(--muted);font-size:14px}
+
+    /* Floating WhatsApp */
+    .wa-float{
+      position:fixed;right:18px;bottom:18px;z-index:60;
+      background:#25D366;color:#fff;border-radius:999px;padding:.9rem 1.1rem;font-weight:700;
+      box-shadow:0 10px 20px rgba(0,0,0,.15)
+    }
+  </style>
+
+  <!-- Dados estruturados básicos da loja -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Store",
+    "name":"Crochê Delas",
+    "image":"/images/capa-croche-delas.jpg",
+    "description":"Bolsas de crochê feitas à mão.",
+    "url":"https://www.seudominio.com.br",
+    "telephone":"+55SEU_NUMERO",
+    "address":{"@type":"PostalAddress","addressCountry":"BR"}
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <span class="brand-mark"></span>
+        <span>Crochê Delas</span>
+      </div>
+      <nav>
+        <a href="#produtos" class="btn">Ver produtos</a>
+        <a id="btnTopWhats" class="btn" href="#" target="_blank" rel="noopener">WhatsApp</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="container hero">
+      <div>
+        <span class="badge"><span class="dot"></span> Feitas à mão no Brasil</span>
+        <h1>Bolsas de crochê com design atual, feitas à mão com carinho.</h1>
+        <p>Peças autorais, duráveis e com acabamento impecável. Produção sob demanda e envio para todo o Brasil.</p>
+        <div class="cta">
+          <a class="btn-primary" href="#produtos">Explorar coleção</a>
+          <a id="btnHeroWhats" class="btn-secondary" href="#" target="_blank" rel="noopener">Falar no WhatsApp</a>
+        </div>
+      </div>
+      <div class="photo" aria-hidden="true">
+        <img src="/images/capa-croche-delas.jpg" alt="Bolsas de crochê Crochê Delas">
+      </div>
+    </section>
+
+    <!-- Produtos -->
+    <section id="produtos" class="container section">
+      <h2>Coleção destaque</h2>
+      <p class="lead">Escolha sua preferida e finalize pelo WhatsApp.</p>
+
+      <!-- Barra de busca/filtragem simples -->
+      <div class="toolbar">
+        <input id="q" class="search" type="search" placeholder="Buscar por nome/cor/estilo..." autocomplete="off" />
+        <select id="availability" class="filter">
+          <option value="">Disponibilidade</option>
+          <option value="stock">Pronta entrega</option>
+          <option value="made-to-order">Sob encomenda</option>
+        </select>
+      </div>
+
+      <!-- GRID renderizada via JS -->
+      <div id="grid" class="grid" aria-live="polite"></div>
+
+      <!-- Template do card -->
+      <template id="tpl-card">
+        <article class="card">
+          <div class="img"><img loading="lazy" alt=""></div>
+          <div class="body">
+            <h3></h3>
+            <div class="meta"></div>
+            <div class="price"></div>
+            <div class="actions">
+              <a class="btn-primary" target="_blank" rel="noopener">Comprar pelo WhatsApp</a>
+              <span class="chip"></span>
+            </div>
+          </div>
+        </article>
+      </template>
+    </section>
+
+    <!-- Sobre -->
+    <section class="container section">
+      <div class="about">
+        <div>
+          <h2>Sobre a Crochê Delas</h2>
+          <p class="lead">Somos um ateliê independente apaixonado por crochê. Cada peça leva horas de trabalho manual, fios selecionados e atenção aos detalhes.</p>
+          <ul style="margin:0; padding-left:18px; color:var(--muted); line-height:1.8">
+            <li>Produção responsável e materiais de qualidade</li>
+            <li>Personalização de cores e tamanhos</li>
+            <li>Envio para todo o Brasil</li>
+          </ul>
+        </div>
+        <div class="photo">
+          <img src="/images/detalhe-croche.jpg" alt="Detalhe do crochê feito à mão">
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container" style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <div>© <span id="year"></span> Crochê Delas — todos os direitos reservados.</div>
+      <div>Contato: <a id="btnFootWhats" href="#" target="_blank" rel="noopener">WhatsApp</a></div>
+    </div>
+  </footer>
+
+  <!-- Botão flutuante WhatsApp -->
+  <a id="btnFloatWhats" class="wa-float" href="#" target="_blank" rel="noopener" aria-label="Chamar no WhatsApp">WhatsApp</a>
+
+  <script>
+    // ========= CONFIGURAÇÕES RÁPIDAS =========
+    const WHATSAPP_NUMBER = "5511969907988"; // ex: 5511999999999
+    const WHATSAPP_PREFIX = "https://wa.me/";
+    const SITE_NAME = "Crochê Delas";
+
+    // Catálogo gerado por dados (fácil de manter)
+    // Basta adicionar mais objetos neste array:
+    const PRODUCTS = [
+      {
+        id: "bolsa-laranja-flor",
+        name: "Bolsa Laranja Flor",
+        price: 199.90,
+        availability: "stock", // "stock" | "made-to-order"
+        image: "/images/bolsa-bege-couro.webp",
+        alt: "Bolsa de crochê laranja com flor roxa aplicada",
+        meta: "Design floral • Alça curta",
+        tags: ["laranja","flor","tote"]
+      },
+      {
+        id: "bolsa-preta-praia",
+        name: "Bolsa Preta Praia",
+        price: 179.90,
+        availability: "made-to-order",
+        image: "/images/bolsa2.png",
+        alt: "Bolsa de crochê preta estilo praia ao lado de óculos",
+        meta: "Material resistente • Alça regulável",
+        tags: ["preta","praia","ombro"]
+      },
+      {
+        id: "bolsa-bege-couro",
+        name: "Bolsa Bege Couro",
+        price: 229.90,
+        availability: "stock",
+        image: "/images/bolsa3.png",
+        alt: "Bolsa de crochê bege com acabamento em couro marrom",
+        meta: "Couro legítimo • Forro interno",
+        tags: ["bege","couro","transversal"]
+      },
+      {
+        id: "clutch-degrade-violeta",
+        name: "Clutch Degradê Violeta",
+        price: 189.90,
+        availability: "stock",
+        image: "/images/bolsa-roxa-gradiente.jpg",
+        alt: "Clutch de crochê com degradê de roxos e cinzas e tassel lilás",
+        meta: "Tons degradê • Tassel removível",
+        tags: ["clutch","roxa","festa"]
+      }
+    ];
+
+    // ========= FUNÇÕES =========
+    const currency = (n) => n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+    const whatsLink = (msg) =>
+      `${WHATSAPP_PREFIX}${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+
+    function setWhatsButtons(){
+      const defaultMsg = `Olá, vim do site ${SITE_NAME} e quero ajuda 💛`;
+      document.getElementById("btnTopWhats").href   = whatsLink(defaultMsg);
+      document.getElementById("btnHeroWhats").href  = whatsLink("Quero uma sugestão de bolsa 👜");
+      document.getElementById("btnFootWhats").href  = whatsLink(defaultMsg);
+      document.getElementById("btnFloatWhats").href = whatsLink(defaultMsg);
+    }
+
+    function render(products){
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+      const tpl = document.getElementById("tpl-card");
+      const ldProducts = [];
+
+      products.forEach(p=>{
+        const node = tpl.content.cloneNode(true);
+
+        const img = node.querySelector("img");
+        img.src = p.image; img.alt = p.alt || p.name;
+        img.addEventListener('error', () => {
+          console.warn('Imagem não encontrada:', p.image);
+          img.src = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="20" fill="%236b7280">Imagem não encontrada</text></svg>'
+          );
+        });
+
+        node.querySelector("h3").textContent = p.name;
+        node.querySelector(".meta").textContent = p.meta || "";
+        node.querySelector(".price").textContent = currency(p.price);
+
+        const btn = node.querySelector(".btn-primary");
+        const msg = `Quero comprar a ${p.name} (${currency(p.price)})`;
+        btn.href = whatsLink(msg);
+
+        const chip = node.querySelector(".chip");
+        chip.textContent = p.availability === "stock" ? "Pronta entrega" : "Sob encomenda";
+
+        // salva para dados estruturados (schema.org)
+        ldProducts.push({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": p.name,
+          "image": [p.image],
+          "description": p.meta || p.name,
+          "sku": p.id,
+          "offers": {
+            "@type": "Offer",
+            "priceCurrency": "BRL",
+            "price": p.price.toFixed(2),
+            "availability": p.availability === "stock" ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
+            "url": window.location.href
+          }
+        });
+
+        grid.appendChild(node);
+      });
+
+      // injeta/atualiza dados estruturados de produtos
+      let ld = document.getElementById("ld-products");
+      if(!ld){
+        ld = document.createElement("script");
+        ld.type = "application/ld+json";
+        ld.id = "ld-products";
+        document.head.appendChild(ld);
+      }
+      ld.textContent = JSON.stringify(ldProducts);
+    }
+
+    function applyFilters(){
+      const q = document.getElementById("q").value.trim().toLowerCase();
+      const av = document.getElementById("availability").value;
+      const filtered = PRODUCTS.filter(p=>{
+        const matchesQ = !q || [p.name, p.meta, ...(p.tags||[])].join(" ").toLowerCase().includes(q);
+        const matchesA = !av || p.availability === av;
+        return matchesQ && matchesA;
+      });
+      render(filtered);
+    }
+
+    // ========= INIT =========
+    document.getElementById('year').textContent = new Date().getFullYear();
+    setWhatsButtons();
+    render(PRODUCTS);
+
+    // eventos de busca/filtro
+    document.getElementById("q").addEventListener("input", applyFilters);
+    document.getElementById("availability").addEventListener("change", applyFilters);
+  </script>
+</body>
+</html>
