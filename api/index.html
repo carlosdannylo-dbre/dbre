@@ -12,7 +12,7 @@
   <meta property="og:title" content="Crochê Delas" />
   <meta property="og:description" content="Bolsas de crochê feitas à mão. Moderno, clean e com WhatsApp." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="/images/capa-croche-delas.jpg" />
+  <meta property="og:image" content="/images/logo-croche-delas.svg" />
 
   <style>
     :root{
@@ -36,7 +36,8 @@
     header{position:sticky;top:0;background:rgba(255,255,255,.75);backdrop-filter:saturate(180%) blur(10px);border-bottom:1px solid var(--border);z-index:50}
     .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
     .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.3px}
-    .brand-mark{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--brand),#4b5563)}
+    .brand-logo{height:40px;width:auto;display:block;filter:drop-shadow(0 6px 10px rgba(0,0,0,.08))}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
     .nav a.btn{padding:.7rem 1rem;border:1px solid var(--text);border-radius:999px;font-weight:500;transition:transform .2s, background .2s}
     .nav a.btn:hover{transform:translateY(-1px);background:var(--text);color:#fff}
 
@@ -125,7 +126,7 @@
     "@context":"https://schema.org",
     "@type":"Store",
     "name":"Crochê Delas",
-    "image":"/images/capa-croche-delas.jpg",
+    "image":"/images/logo-croche-delas.svg",
     "description":"Bolsas de crochê feitas à mão.",
     "url":"https://www.seudominio.com.br",
     "telephone":"+55SEU_NUMERO",
@@ -137,8 +138,8 @@
   <header>
     <div class="container nav">
       <div class="brand">
-        <span class="brand-mark"></span>
-        <span>Crochê Delas</span>
+        <img class="brand-logo" src="/images/logo-croche-delas.svg" alt="Logotipo Crochê Delas">
+        <span class="sr-only">Crochê Delas</span>
       </div>
       <nav>
         <a href="#produtos" class="btn">Ver produtos</a>

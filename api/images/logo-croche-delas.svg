@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Logotipo da marca Crochê Delas</title>
+  <desc id="desc">Marca escrita em letra cursiva branca com um novelo de lã e fio sobre fundo rosa.</desc>
+  <defs>
+    <linearGradient id="yarn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.9" />
+      <stop offset="1" stop-color="#fff" stop-opacity="0.75" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1200" fill="#c9a1aa"/>
+  <g transform="translate(200,300)">
+    <path d="M150 520c120-60 220-20 350-70 60-20 110-60 120-110 10-54-30-86-70-82" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+    <g transform="translate(520,120)">
+      <circle cx="140" cy="170" r="120" fill="url(#yarn)" stroke="#fff" stroke-width="12" />
+      <path d="M50 150c40-36 92-46 140-26m-190 60c54-20 118-14 170 20m-184 34c64-10 130 0 184 36M80 230c8-64 56-124 114-146m-44 188c-10-66 22-132 78-168" fill="none" stroke="#c9a1aa" stroke-width="16" stroke-linecap="round" />
+      <path d="M240 270c54 30 94 44 160 24" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" />
+    </g>
+  </g>
+  <text x="110" y="660" fill="#fff" font-family="'Dancing Script', 'Pacifico', 'Brush Script MT', cursive" font-size="180" font-weight="400" letter-spacing="2">Crochê Delas</text>
+</svg>
